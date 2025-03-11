@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramadan Prayer Times</title>
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --glass-shadow: rgba(0, 0, 0, 0.05);
+            --text-color: #000;
+            --secondary-text: #555;
+            --highlight-color: rgba(0, 0, 0, 0.1);
+            --accent-color: #0077ff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffffff, #f5f5f5);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+            color: var(--text-color);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--secondary-text);
+            margin-bottom: 2rem;
+        }
+        
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 
+                0 8px 32px var(--glass-shadow),
+                0 4px 16px rgba(0, 0, 0, 0.03),
+                inset 0 1px 1px rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
+        }
+        
+        .date-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .date-selector input, .date-selector button {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .date-selector button:hover {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .main-times {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .time-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.05),
+                0 1px 1px rgba(0, 0, 0, 0.03),
+                inset 0 1px 1px rgba(255, 255, 255, 0.7);
+        }
+        
+        .time-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.1),
+                0 5px 15px rgba(0, 0, 0, 0.05),
+                inset 0 1px 1px rgba(255, 255, 255, 0.7);
+        }
+        
+        .time-label {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-text);
+        }
+        
+        .time {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .date-display {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+            color: var(--text-color);
+        }
+        
+        .hijri-date {
+            font-size: 1rem;
+            color: var(--secondary-text);
+        }
+        
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .view-toggle button {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .view-toggle button.active {
+            background: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 119, 255, 0.3);
+        }
+        
+        .weekly-view {
+            display: none;
+            overflow-x: auto;
+        }
+        
+        .weekly-view.active {
+            display: block;
+        }
+        
+        .weekly-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .weekly-table th, .weekly-table td {
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+        }
+        
+        .weekly-table th {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            color: var(--text-color);
+        }
+        
+        .weekly-table tr:nth-child(even) {
+            background: rgba(0, 0, 0, 0.02);
+        }
+        
+        .current-day {
+            background: rgba(0, 119, 255, 0.1) !important;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .date-selector {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .date-selector input, .date-selector button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Ramadan Prayer Times</h1>
+            <p class="subtitle">Track your Sehri and Iftar times with ease</p>
+        </header>
+        
+        <div class="glass-card">
+            <div class="date-selector">
+                <div>
+                    <input type="date" id="date-picker">
+                </div>
+                <div>
+                    <button id="today-btn">Today</button>
+                    <button id="tomorrow-btn">Tomorrow</button>
+                </div>
+            </div>
+            
+            <div class="view-toggle">
+                <button id="daily-view-btn" class="active">Daily View</button>
+                <button id="weekly-view-btn">Weekly View</button>
+            </div>
+            
+            <div id="daily-view">
+                <div class="date-display" id="current-date">March 11, 2025</div>
+                <p class="hijri-date" id="hijri-date">11 Ramadan, 1446 AH</p>
+                
+                <div class="main-times">
+                    <div class="time-card">
+                        <div class="time-label">Sehri / Fajr</div>
+                        <div class="time" id="sehri-time">04:55</div>
+                        <div class="subtitle">Start Fast</div>
+                    </div>
+                    
+                    <div class="time-card">
+                        <div class="time-label">Iftar / Maghrib</div>
+                        <div class="time" id="iftar-time">18:14</div>
+                        <div class="subtitle">Break Fast</div>
+                    </div>
+                </div>
+                
+                <div class="glass-card">
+                    <h2>All Prayer Times</h2>
+                    <table class="weekly-table">
+                        <tr>
+                            <th>Prayer</th>
+                            <th>Azan</th>
+                            <th>Iqama</th>
+                        </tr>
+                        <tr>
+                            <td>Fajr</td>
+                            <td id="fajr-azan">04:55</td>
+                            <td id="fajr-iqama">+15 mins</td>
+                        </tr>
+                        <tr>
+                            <td>Sunrise</td>
+                            <td id="sunrise" colspan="2">06:32</td>
+                        </tr>
+                        <tr>
+                            <td>Dhuhr</td>
+                            <td id="dhuhr-azan">12:29</td>
+                            <td id="dhuhr-iqama">13:00</td>
+                        </tr>
+                        <tr>
+                            <td>Asr</td>
+                            <td id="asr-azan">15:29</td>
+                            <td id="asr-iqama">15:45</td>
+                        </tr>
+                        <tr>
+                            <td>Maghrib</td>
+                            <td id="maghrib-azan">18:14</td>
+                            <td id="maghrib-iqama">At Azan</td>
+                        </tr>
+                        <tr>
+                            <td>Isha</td>
+                            <td id="isha-azan">19:36</td>
+                            <td id="isha-iqama">19:45</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="weekly-view" class="weekly-view">
+                <div class="glass-card">
+                    <h2>Weekly Prayer Times</h2>
+                    <table class="weekly-table" id="weekly-table">
+                        <tr>
+                            <th>Day</th>
+                            <th>Date</th>
+                            <th>Ramadan</th>
+                            <th>Sehri</th>
+                            <th>Iftar</th>
+                        </tr>
+                        <!-- Rows will be populated by JavaScript -->
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Based on Dar Ul-Isra Centre Prayer Timetable 2025/1446 AH</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Ramadan 2025 prayer times data (based on the image)
+        const prayerTimesData = [
+            { day: "Sat", date: "1", ramadan: "1", sehri: "05:17", sunrise: "06:54", dhuhr: "12:31", asr: "15:17", iftar: "17:57", isha: "19:23" },
+            { day: "Sun", date: "2", ramadan: "2", sehri: "05:15", sunrise: "06:52", dhuhr: "12:31", asr: "15:19", iftar: "17:58", isha: "19:24" },
+            { day: "Mon", date: "3", ramadan: "3", sehri: "05:13", sunrise: "06:50", dhuhr: "12:30", asr: "15:20", iftar: "18:00", isha: "19:25" },
+            { day: "Tue", date: "4", ramadan: "4", sehri: "05:10", sunrise: "06:47", dhuhr: "12:30", asr: "15:21", iftar: "18:02", isha: "19:27" },
+            { day: "Wed", date: "5", ramadan: "5", sehri: "05:08", sunrise: "06:45", dhuhr: "12:30", asr: "15:22", iftar: "18:04", isha: "19:28" },
+            { day: "Thu", date: "6", ramadan: "6", sehri: "05:06", sunrise: "06:43", dhuhr: "12:30", asr: "15:23", iftar: "18:05", isha: "19:29" },
+            { day: "Fri", date: "7", ramadan: "7", sehri: "05:04", sunrise: "06:41", dhuhr: "12:30", asr: "15:24", iftar: "18:07", isha: "19:30" },
+            { day: "Sat", date: "8", ramadan: "8", sehri: "05:02", sunrise: "06:39", dhuhr: "12:29", asr: "15:26", iftar: "18:09", isha: "19:32" },
+            { day: "Sun", date: "9", ramadan: "9", sehri: "04:59", sunrise: "06:36", dhuhr: "12:29", asr: "15:27", iftar: "18:11", isha: "19:33" },
+            { day: "Mon", date: "10", ramadan: "10", sehri: "04:57", sunrise: "06:34", dhuhr: "12:29", asr: "15:28", iftar: "18:12", isha: "19:34" },
+            { day: "Tue", date: "11", ramadan: "11", sehri: "04:55", sunrise: "06:32", dhuhr: "12:29", asr: "15:29", iftar: "18:14", isha: "19:36" },
+            { day: "Wed", date: "12", ramadan: "12", sehri: "04:53", sunrise: "06:30", dhuhr: "12:28", asr: "15:30", iftar: "18:16", isha: "19:38" },
+            { day: "Thu", date: "13", ramadan: "13", sehri: "04:50", sunrise: "06:27", dhuhr: "12:28", asr: "15:31", iftar: "18:17", isha: "19:39" },
+            { day: "Fri", date: "14", ramadan: "14", sehri: "04:48", sunrise: "06:25", dhuhr: "12:28", asr: "15:33", iftar: "18:19", isha: "19:40" },
+            { day: "Sat", date: "15", ramadan: "15", sehri: "04:46", sunrise: "06:23", dhuhr: "12:27", asr: "15:34", iftar: "18:21", isha: "19:42" },
+            { day: "Sun", date: "16", ramadan: "16", sehri: "04:44", sunrise: "06:21", dhuhr: "12:27", asr: "15:35", iftar: "18:23", isha: "19:44" },
+            { day: "Mon", date: "17", ramadan: "17", sehri: "04:41", sunrise: "06:18", dhuhr: "12:27", asr: "15:36", iftar: "18:24", isha: "19:45" },
+            { day: "Tue", date: "18", ramadan: "18", sehri: "04:39", sunrise: "06:16", dhuhr: "12:27", asr: "15:37", iftar: "18:26", isha: "19:46" },
+            { day: "Wed", date: "19", ramadan: "19", sehri: "04:37", sunrise: "06:14", dhuhr: "12:26", asr: "15:38", iftar: "18:28", isha: "19:48" },
+            { day: "Thu", date: "20", ramadan: "20", sehri: "04:36", sunrise: "06:12", dhuhr: "12:26", asr: "15:39", iftar: "18:29", isha: "19:49" },
+            { day: "Fri", date: "21", ramadan: "21", sehri: "04:33", sunrise: "06:09", dhuhr: "12:26", asr: "15:40", iftar: "18:31", isha: "19:50" },
+            { day: "Sat", date: "22", ramadan: "22", sehri: "04:32", sunrise: "06:07", dhuhr: "12:25", asr: "15:41", iftar: "18:33", isha: "19:52" },
+            { day: "Sun", date: "23", ramadan: "23", sehri: "04:30", sunrise: "06:05", dhuhr: "12:25", asr: "15:42", iftar: "18:35", isha: "19:54" },
+            { day: "Mon", date: "24", ramadan: "24", sehri: "04:27", sunrise: "06:02", dhuhr: "12:25", asr: "15:43", iftar: "18:36", isha: "19:55" },
+            { day: "Tue", date: "25", ramadan: "25", sehri: "04:25", sunrise: "06:00", dhuhr: "12:24", asr: "15:44", iftar: "18:38", isha: "19:56" },
+            { day: "Wed", date: "26", ramadan: "26", sehri: "04:24", sunrise: "05:58", dhuhr: "12:24", asr: "15:45", iftar: "18:40", isha: "19:58" },
+            { day: "Thu", date: "27", ramadan: "27", sehri: "04:22", sunrise: "05:56", dhuhr: "12:24", asr: "15:46", iftar: "18:41", isha: "19:59" },
+            { day: "Fri", date: "28", ramadan: "28", sehri: "04:20", sunrise: "05:53", dhuhr: "12:24", asr: "15:47", iftar: "18:43", isha: "20:01" },
+            { day: "Sat", date: "29", ramadan: "29", sehri: "04:18", sunrise: "05:51", dhuhr: "12:23", asr: "15:48", iftar: "18:45", isha: "20:02" }
+        ];
+        
+        // DOM Elements
+        const datePicker = document.getElementById('date-picker');
+        const todayBtn = document.getElementById('today-btn');
+        const tomorrowBtn = document.getElementById('tomorrow-btn');
+        const dailyViewBtn = document.getElementById('daily-view-btn');
+        const weeklyViewBtn = document.getElementById('weekly-view-btn');
+        const dailyView = document.getElementById('daily-view');
+        const weeklyView = document.getElementById('weekly-view');
+        const currentDateDisplay = document.getElementById('current-date');
+        const hijriDateDisplay = document.getElementById('hijri-date');
+        const sehriTimeDisplay = document.getElementById('sehri-time');
+        const iftarTimeDisplay = document.getElementById('iftar-time');
+        const weeklyTable = document.getElementById('weekly-table');
+        
+        // Prayer time elements
+        const fajrAzan = document.getElementById('fajr-azan');
+        const fajrIqama = document.getElementById('fajr-iqama');
+        const sunrise = document.getElementById('sunrise');
+        const dhuhrAzan = document.getElementById('dhuhr-azan');
+        const dhuhrIqama = document.getElementById('dhuhr-iqama');
+        const asrAzan = document.getElementById('asr-azan');
+        const asrIqama = document.getElementById('asr-iqama');
+        const maghribAzan = document.getElementById('maghrib-azan');
+        const maghribIqama = document.getElementById('maghrib-iqama');
+        const ishaAzan = document.getElementById('isha-azan');
+        const ishaIqama = document.getElementById('isha-iqama');
+        
+        // Initialize date picker with today's date
+        const today = new Date();
+        const formattedDate = formatDateForInput(today);
+        datePicker.value = formattedDate;
+        
+        // Initial load
+        updateDailyView(today);
+        populateWeeklyView();
+        
+        // Event Listeners
+        datePicker.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            updateDailyView(selectedDate);
+        });
+        
+        todayBtn.addEventListener('click', function() {
+            const today = new Date();
+            datePicker.value = formatDateForInput(today);
+            updateDailyView(today);
+        });
+        
+        tomorrowBtn.addEventListener('click', function() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            datePicker.value = formatDateForInput(tomorrow);
+            updateDailyView(tomorrow);
+        });
+        
+        dailyViewBtn.addEventListener('click', function() {
+            dailyViewBtn.classList.add('active');
+            weeklyViewBtn.classList.remove('active');
+            dailyView.style.display = 'block';
+            weeklyView.style.display = 'none';
+        });
+        
+        weeklyViewBtn.addEventListener('click', function() {
+            weeklyViewBtn.classList.add('active');
+            dailyViewBtn.classList.remove('active');
+            weeklyView.style.display = 'block';
+            dailyView.style.display = 'none';
+        });
+        
+        // Functions
+        function formatDateForInput(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        function updateDailyView(date) {
+            // Display date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDateDisplay.textContent = date.toLocaleDateString('en-US', options);
+            
+            // Find the corresponding prayer times
+            // For simplicity, we're using March 2025 data from the image
+            // In a real app, you would have a more comprehensive date mapping
+            
+            // Calculate the day of the month (1-31)
+            const day = date.getDate();
+            
+            // Find the prayer times for this day in March
+            // This is simplified - in a real app, you would handle different months
+            const dayData = prayerTimesData.find(item => parseInt(item.date) === day);
+            
+            if (dayData) {
+                // We found matching data
+                sehriTimeDisplay.textContent = dayData.sehri;
+                iftarTimeDisplay.textContent = dayData.iftar;
+                hijriDateDisplay.textContent = `${dayData.ramadan} Ramadan, 1446 AH`;
+                
+                // Update all prayer times
+                fajrAzan.textContent = dayData.sehri;
+                fajrIqama.textContent = "+15 mins";
+                sunrise.textContent = dayData.sunrise;
+                dhuhrAzan.textContent = dayData.dhuhr;
+                dhuhrIqama.textContent = "13:00";
+                asrAzan.textContent = dayData.asr;
+                asrIqama.textContent = "15:45";
+                maghribAzan.textContent = dayData.iftar;
+                maghribIqama.textContent = "At Azan";
+                ishaAzan.textContent = dayData.isha;
+                ishaIqama.textContent = "19:45";
+            } else {
+                // No matching data found, display placeholders or error message
+                sehriTimeDisplay.textContent = "--:--";
+                iftarTimeDisplay.textContent = "--:--";
+                hijriDateDisplay.textContent = "Date not in Ramadan 1446 AH";
+                
+                // Clear all prayer times
+                fajrAzan.textContent = "--:--";
+                fajrIqama.textContent = "--:--";
+                sunrise.textContent = "--:--";
+                dhuhrAzan.textContent = "--:--";
+                dhuhrIqama.textContent = "--:--";
+                asrAzan.textContent = "--:--";
+                asrIqama.textContent = "--:--";
+                maghribAzan.textContent = "--:--";
+                maghribIqama.textContent = "--:--";
+                ishaAzan.textContent = "--:--";
+                ishaIqama.textContent = "--:--";
+            }
+        }
+        
+        function populateWeeklyView() {
+            // Clear existing rows except header
+            while (weeklyTable.rows.length > 1) {
+                weeklyTable.deleteRow(1);
+            }
+            
+            // Get current day of month
+            const currentDay = new Date().getDate();
+            
+            // Add a row for each day in the data
+            prayerTimesData.forEach(dayData => {
+                const row = weeklyTable.insertRow();
+                
+                // Add class to highlight current day
+                if (parseInt(dayData.date) === currentDay) {
+                    row.classList.add('current-day');
+                }
+                
+                // Add cells
+                const dayCell = row.insertCell();
+                dayCell.textContent = dayData.day;
+                
+                const dateCell = row.insertCell();
+                dateCell.textContent = `March ${dayData.date}`;
+                
+                const ramadanCell = row.insertCell();
+                ramadanCell.textContent = `${dayData.ramadan} Ramadan`;
+                
+                const sehriCell = row.insertCell();
+                sehriCell.textContent = dayData.sehri;
+                
+                const iftarCell = row.insertCell();
+                iftarCell.textContent = dayData.iftar;
+            });
+        }
+    </script>
+</body>
+</html>
