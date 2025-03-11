@@ -3,16 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ramadan Prayer Times</title>
+    <title>Ramadan Calendar</title>
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(0, 0, 0, 0.1);
-            --glass-shadow: rgba(0, 0, 0, 0.05);
-            --text-color: #000;
-            --secondary-text: #555;
-            --highlight-color: rgba(0, 0, 0, 0.1);
-            --accent-color: #0077ff;
+            /* Ramadan Theme Colors */
+            --primary-bg: #0a1a3b; /* Dark blue */
+            --secondary-bg: #0c2252; /* Slightly lighter blue */
+            --accent-gold: #d4af37; /* Gold */
+            --accent-gold-light: #f0e68c; /* Light gold */
+            --text-color: #ffffff; /* White text */
+            --secondary-text: #d4af37; /* Gold text */
+            --highlight-color: rgba(212, 175, 55, 0.2); /* Transparent gold */
+            --glass-bg: rgba(10, 26, 59, 0.7); /* Dark blue with transparency */
+            --glass-border: rgba(212, 175, 55, 0.3); /* Gold border */
+            --glass-shadow: rgba(0, 0, 0, 0.2);
+            --card-bg: rgba(12, 34, 82, 0.8); /* Slightly lighter blue for cards */
         }
         
         * {
@@ -23,46 +28,187 @@
         }
         
         body {
-            background: linear-gradient(135deg, #ffffff, #f5f5f5);
+            background-color: var(--primary-bg);
+            background-image: 
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23d4af37" stroke-width="0.5" opacity="0.2"/></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><path d="M100,20 A80,80 0 1,0 100,180 A80,80 0 1,0 100,20 z M100,40 A60,60 0 1,1 100,160 A60,60 0 1,1 100,40 z" fill="none" stroke="%23d4af37" stroke-width="0.5" opacity="0.1"/></svg>');
+            background-size: 100px 100px, 200px 200px;
+            background-position: 0 0, 50px 50px;
             color: var(--text-color);
             min-height: 100vh;
-            padding: 2rem 1rem; /* Reduced side padding for mobile */
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Decorative elements */
+        body::before, body::after {
+            content: "";
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Stars background */
+        body::before {
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        /* Moon decoration */
+        .moon-decoration {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+            z-index: -1;
+        }
+        
+        /* Lantern decorations */
+        .lantern {
+            position: fixed;
+            width: 30px;
+            height: 45px;
+            background: var(--accent-gold);
+            border-radius: 5px 5px 15px 15px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
+            z-index: -1;
+            opacity: 0.8;
+        }
+        
+        .lantern::before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-gold-light);
+        }
+        
+        .lantern::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 5px;
+            width: 20px;
+            height: 5px;
+            border-radius: 0 0 10px 10px;
+            background: var(--accent-gold-light);
+        }
+        
+        .lantern:nth-child(1) {
+            top: 100px;
+            left: 50px;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .lantern:nth-child(2) {
+            top: 150px;
+            right: 80px;
+            animation: float 7s ease-in-out infinite;
+        }
+        
+        .lantern:nth-child(3) {
+            bottom: 100px;
+            left: 80px;
+            animation: float 5s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
         
         header {
             text-align: center;
             margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        /* Crescent moon in header */
+        header::before {
+            content: "";
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            box-shadow: 10px 5px 0 var(--primary-bg);
+            z-index: -1;
+            opacity: 0.2;
         }
         
         h1 {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
             font-weight: 300;
-            color: var(--text-color);
+            color: var(--accent-gold);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
         }
         
         .subtitle {
             font-size: 1.2rem;
-            color: var(--secondary-text);
+            color: var(--accent-gold-light);
             margin-bottom: 2rem;
         }
         
         .glass-card {
-            background: var(--glass-bg);
+            background: var(--card-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: 1rem;
-            padding: 1.5rem; /* Reduced padding for mobile */
+            padding: 2rem;
             box-shadow: 
                 0 8px 32px var(--glass-shadow),
-                0 4px 16px rgba(0, 0, 0, 0.03),
-                inset 0 1px 1px rgba(255, 255, 255, 0.6);
+                0 4px 16px rgba(0, 0, 0, 0.1),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
             margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Decorative pattern for cards */
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+            opacity: 0.7;
         }
         
         .date-selector {
@@ -70,62 +216,104 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
-            gap: 1rem; /* Add gap between elements */
+            width: 100%;
+        }
+        
+        .date-input-container, .date-buttons-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .date-buttons-container {
+            display: flex;
+            gap: 0.5rem;
         }
         
         .date-selector input, .date-selector button {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: var(--secondary-bg);
+            border: 1px solid var(--accent-gold);
             color: var(--text-color);
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
             cursor: pointer;
             font-size: 1rem;
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 44px;
         }
         
         .date-selector button:hover {
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: var(--accent-gold);
+            color: var(--primary-bg);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
             transform: translateY(-2px);
+        }
+        
+        /* Fix for date input on mobile */
+        input[type="date"] {
+            -webkit-appearance: none;
+            appearance: none;
+            min-height: 44px;
+            min-width: 140px;
+            color: var(--text-color);
+            background-color: var(--secondary-bg);
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
         }
         
         .main-times {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Smaller minimum width */
-            gap: 1.5rem; /* Reduced gap for mobile */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
             margin-bottom: 2rem;
         }
         
         .time-card {
-            background: var(--glass-bg);
+            background: var(--secondary-bg);
             backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--accent-gold);
             border-radius: 1rem;
-            padding: 1.5rem; /* Reduced padding for mobile */
+            padding: 2rem;
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 
-                0 10px 30px rgba(0, 0, 0, 0.05),
-                0 1px 1px rgba(0, 0, 0, 0.03),
-                inset 0 1px 1px rgba(255, 255, 255, 0.7);
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                0 1px 1px rgba(0, 0, 0, 0.1),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Decorative moon for time cards */
+        .time-card::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            opacity: 0.3;
         }
         
         .time-card:hover {
             transform: translateY(-5px);
             box-shadow: 
-                0 15px 35px rgba(0, 0, 0, 0.1),
-                0 5px 15px rgba(0, 0, 0, 0.05),
-                inset 0 1px 1px rgba(255, 255, 255, 0.7);
+                0 15px 35px rgba(0, 0, 0, 0.3),
+                0 5px 15px rgba(0, 0, 0, 0.2),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
         
         .time-label {
             font-size: 1.2rem;
             margin-bottom: 0.5rem;
-            color: var(--secondary-text);
+            color: var(--accent-gold);
         }
         
         .time {
@@ -133,6 +321,7 @@
             font-weight: 300;
             margin-bottom: 0.5rem;
             color: var(--text-color);
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
         }
         
         .date-display {
@@ -144,7 +333,7 @@
         
         .hijri-date {
             font-size: 1rem;
-            color: var(--secondary-text);
+            color: var(--accent-gold);
         }
         
         .view-toggle {
@@ -152,27 +341,24 @@
             justify-content: center;
             gap: 1rem;
             margin-bottom: 2rem;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
         }
         
         .view-toggle button {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: var(--secondary-bg);
+            border: 1px solid var(--accent-gold);
             color: var(--text-color);
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
             cursor: pointer;
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
-            flex: 1; /* Allow buttons to grow */
-            min-width: 120px; /* Minimum width for buttons */
         }
         
         .view-toggle button.active {
-            background: var(--accent-color);
-            color: white;
-            box-shadow: 0 4px 12px rgba(0, 119, 255, 0.3);
+            background: var(--accent-gold);
+            color: var(--primary-bg);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
         }
         
         .weekly-view {
@@ -187,126 +373,335 @@
         .weekly-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.95rem; /* Slightly smaller font for tables */
         }
         
         .weekly-table th, .weekly-table td {
-            padding: 0.75rem; /* Reduced padding for mobile */
+            padding: 1rem;
             text-align: center;
             border: 1px solid var(--glass-border);
         }
         
         .weekly-table th {
-            background: rgba(255, 255, 255, 0.8);
+            background: var(--secondary-bg);
             backdrop-filter: blur(10px);
-            color: var(--text-color);
+            color: var(--accent-gold);
         }
         
         .weekly-table tr:nth-child(even) {
-            background: rgba(0, 0, 0, 0.02);
+            background: rgba(12, 34, 82, 0.5);
         }
         
         .current-day {
-            background: rgba(0, 119, 255, 0.1) !important;
+            background: rgba(212, 175, 55, 0.2) !important;
         }
         
         footer {
             text-align: center;
             margin-top: 2rem;
-            color: var(--secondary-text);
+            color: var(--accent-gold-light);
             font-size: 0.9rem;
+            position: relative;
+            padding-top: 20px;
         }
         
-        /* Improved mobile styles */
+        footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+        }
+        
+        /* Twinkling stars animation */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .star {
+            position: fixed;
+            background-color: var(--accent-gold-light);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        
+        .star:nth-child(1) { top: 10%; left: 10%; width: 2px; height: 2px; animation: twinkle 3s infinite 0.5s; }
+        .star:nth-child(2) { top: 20%; left: 20%; width: 1px; height: 1px; animation: twinkle 4s infinite 1s; }
+        .star:nth-child(3) { top: 15%; left: 50%; width: 2px; height: 2px; animation: twinkle 5s infinite 1.5s; }
+        .star:nth-child(4) { top: 30%; left: 70%; width: 1px; height: 1px; animation: twinkle 3.5s infinite 0.7s; }
+        .star:nth-child(5) { top: 40%; left: 30%; width: 2px; height: 2px; animation: twinkle 4.5s infinite 1.2s; }
+        .star:nth-child(6) { top: 50%; left: 80%; width: 1px; height: 1px; animation: twinkle 3s infinite 0.3s; }
+        .star:nth-child(7) { top: 60%; left: 15%; width: 2px; height: 2px; animation: twinkle 4s infinite 0.9s; }
+        .star:nth-child(8) { top: 70%; left: 60%; width: 1px; height: 1px; animation: twinkle 5s infinite 1.7s; }
+        .star:nth-child(9) { top: 80%; left: 40%; width: 2px; height: 2px; animation: twinkle 3.5s infinite 0.2s; }
+        .star:nth-child(10) { top: 85%; left: 90%; width: 1px; height: 1px; animation: twinkle 4.5s infinite 1.3s; }
+        
+        /* Glow effect for time cards */
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
+        }
+        
+        .time-card {
+            animation: glow 5s infinite;
+        }
+        
+        /* Responsive adjustments for Ramadan theme */
         @media (max-width: 768px) {
             body {
-                padding: 1rem 0.75rem; /* Further reduced padding */
+                padding: 0.5rem;
             }
             
             h1 {
-                font-size: 2rem; /* Smaller heading on mobile */
+                font-size: 1.5rem;
+                margin-bottom: 0.2rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+            
+            header {
+                margin-bottom: 1rem;
             }
             
             .glass-card {
-                padding: 1.25rem; /* Smaller padding on mobile */
+                padding: 0.8rem;
+                margin-bottom: 1rem;
+                border-radius: 0.8rem;
             }
             
             .date-selector {
                 flex-direction: column;
-                gap: 0.75rem;
+                gap: 0.5rem;
                 width: 100%;
+                margin-bottom: 1rem;
             }
             
             .date-selector > div {
                 width: 100%;
-                display: flex;
-                gap: 0.5rem;
             }
             
             .date-selector input, .date-selector button {
                 width: 100%;
-                padding: 0.75rem 1rem; /* Smaller padding */
-                font-size: 0.95rem; /* Slightly smaller font */
+                margin-bottom: 0.3rem;
+                padding: 0.6rem;
+                font-size: 0.9rem;
             }
             
             .view-toggle {
+                flex-direction: row;
+                width: 100%;
+                margin-bottom: 1rem;
                 gap: 0.5rem;
             }
             
             .view-toggle button {
-                padding: 0.75rem 1rem;
-                font-size: 0.95rem;
-            }
-            
-            .time {
-                font-size: 2.5rem; /* Smaller time display on mobile */
+                flex: 1;
+                padding: 0.6rem 0.4rem;
+                font-size: 0.9rem;
             }
             
             .date-display {
-                font-size: 1.25rem; /* Smaller date display on mobile */
-                word-wrap: break-word; /* Allow long dates to wrap */
+                font-size: 1.2rem;
+                margin-bottom: 0.2rem;
             }
             
-            .weekly-table {
-                font-size: 0.85rem; /* Even smaller font for tables on mobile */
+            .hijri-date {
+                font-size: 0.9rem;
+                margin-bottom: 0.8rem;
             }
             
-            .weekly-table th, .weekly-table td {
-                padding: 0.5rem 0.25rem; /* Smaller cell padding */
+            /* Make main time cards display side by side on mobile */
+            .main-times {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.8rem;
+                margin-bottom: 1rem;
             }
-        }
-        
-        /* Extra small screens */
-        @media (max-width: 480px) {
-            .date-selector > div:nth-child(2) {
-                display: flex;
-                flex-direction: row;
-                gap: 0.5rem;
+            
+            .time-card {
+                padding: 0.8rem 0.5rem;
+                border-radius: 0.8rem;
+            }
+            
+            .time-label {
+                font-size: 0.9rem;
+                margin-bottom: 0.2rem;
             }
             
             .time {
-                font-size: 2.25rem; /* Even smaller time display */
+                font-size: 1.8rem;
+                margin-bottom: 0.2rem;
+            }
+            
+            .time-card .subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 0;
             }
             
             .weekly-table {
-                font-size: 0.75rem; /* Smallest font for tables */
+                font-size: 0.8rem;
+            }
+            
+            .weekly-table th, .weekly-table td {
+                padding: 0.5rem 0.3rem;
+            }
+            
+            /* Fix for horizontal scrolling on tables */
+            .weekly-view {
+                max-width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .moon-decoration {
+                width: 40px;
+                height: 40px;
+                top: 20px;
+                right: 20px;
+            }
+            
+            .lantern {
+                width: 20px;
+                height: 30px;
+            }
+            
+            .lantern::before {
+                width: 8px;
+                height: 8px;
+                top: -8px;
+                left: 6px;
+            }
+            
+            .lantern::after {
+                width: 16px;
+                height: 4px;
+                bottom: -4px;
+                left: 2px;
+            }
+        }
+        
+        /* Additional fixes for very small screens */
+        @media (max-width: 375px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            .subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 0.8rem;
+            }
+            
+            .time {
+                font-size: 1.6rem;
+            }
+            
+            .time-label {
+                font-size: 0.8rem;
+            }
+            
+            .time-card .subtitle {
+                font-size: 0.7rem;
+            }
+            
+            .weekly-table {
+                font-size: 0.7rem;
+            }
+            
+            .weekly-table th, .weekly-table td {
+                padding: 0.4rem 0.2rem;
+            }
+        }
+        
+        /* Optimize for different viewport heights */
+        @media (max-height: 700px) {
+            body {
+                padding: 0.4rem;
+            }
+            
+            header {
+                margin-bottom: 0.5rem;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+                margin-bottom: 0.1rem;
+            }
+            
+            .subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .glass-card {
+                padding: 0.6rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .date-selector {
+                margin-bottom: 0.5rem;
+            }
+            
+            .view-toggle {
+                margin-bottom: 0.5rem;
+            }
+            
+            .date-display {
+                font-size: 1rem;
+                margin-bottom: 0.1rem;
+            }
+            
+            .hijri-date {
+                font-size: 0.8rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .main-times {
+                margin-bottom: 0.5rem;
+            }
+            
+            .time-card {
+                padding: 0.6rem 0.4rem;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Decorative elements -->
+    <div class="moon-decoration"></div>
+    <div class="lantern"></div>
+    <div class="lantern"></div>
+    <div class="lantern"></div>
+    
+    <!-- Twinkling stars -->
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    
     <div class="container">
         <header>
             <h1>Ramadan Prayer Times</h1>
-            <p class="subtitle">Cardiff, Wales, United Kingdom</p>
+            <p class="subtitle">Cardiff, Wales, UK</p>
         </header>
         
         <div class="glass-card">
             <div class="date-selector">
-                <div>
+                <div class="date-input-container">
                     <input type="date" id="date-picker">
                 </div>
-                <div>
+                <div class="date-buttons-container">
                     <button id="today-btn">Today</button>
                     <button id="tomorrow-btn">Tomorrow</button>
                 </div>
@@ -321,15 +716,26 @@
                 <div class="date-display" id="current-date">March 11, 2025</div>
                 <p class="hijri-date" id="hijri-date">11 Ramadan, 1446 AH</p>
                 
+                <!-- Main prayer time cards optimized for mobile view -->
                 <div class="main-times">
                     <div class="time-card">
-                        <div class="time-label">Sehri / Fajr</div>
+                        <div class="time-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;">
+                                <path d="M12 3C7.03 3 3 7.03 3 12H0L4 16L8 12H5C5 8.13 8.13 5 12 5C15.87 5 19 8.13 19 12C19 15.87 15.87 19 12 19C10.07 19 8.32 18.21 7.06 16.94L5.64 18.36C7.27 19.99 9.51 21 12 21C16.97 21 21 16.97 21 12C21 7.03 16.97 3 12 3Z" fill="#d4af37"/>
+                            </svg>
+                            Sehri / Fajr
+                        </div>
                         <div class="time" id="sehri-time">04:55</div>
                         <div class="subtitle">Start Fast</div>
                     </div>
                     
                     <div class="time-card">
-                        <div class="time-label">Iftar / Maghrib</div>
+                        <div class="time-label">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;">
+                                <path d="M12 7C9.24 7 7 9.24 7 12C7 14.76 9.24 17 12 17C14.76 17 17 14.76 17 12C17 9.24 14.76 7 12 7ZM2 13H4C4.55 13 5 12.55 5 12C5 11.45 4.55 11 4 11H2C1.45 11 1 11.45 1 12C1 12.55 1.45 13 2 13ZM20 13H22C22.55 13 23 12.55 23 12C23 11.45 22.55 11 22 11H20C19.45 11 19 11.45 19 12C19 12.55 19.45 13 20 13ZM11 2V4C11 4.55 11.45 5 12 5C12.55 5 13 4.55 13 4V2C13 1.45 12.55 1 12 1C11.45 1 11 1.45 11 2ZM11 20V22C11 22.55 11.45 23 12 23C12.55 23 13 22.55 13 22V20C13 19.45 12.55 19 12 19C11.45 19 11 19.45 11 20ZM5.99 4.58C5.6 4.19 4.96 4.19 4.58 4.58C4.19 4.97 4.19 5.61 4.58 5.99L5.64 7.05C6.03 7.44 6.67 7.44 7.05 7.05C7.44 6.66 7.44 6.02 7.05 5.64L5.99 4.58ZM18.36 16.95C17.97 16.56 17.33 16.56 16.95 16.95C16.56 17.34 16.56 17.98 16.95 18.36L18.01 19.42C18.4 19.81 19.04 19.81 19.42 19.42C19.81 19.03 19.81 18.39 19.42 18.01L18.36 16.95ZM19.42 5.99C19.81 5.6 19.81 4.96 19.42 4.58C19.03 4.19 18.39 4.19 18.01 4.58L16.95 5.64C16.56 6.03 16.56 6.67 16.95 7.05C17.34 7.44 17.98 7.44 18.36 7.05L19.42 5.99ZM7.05 18.36C7.44 17.97 7.44 17.33 7.05 16.95C6.66 16.56 6.02 16.56 5.64 16.95L4.58 18.01C4.19 18.4 4.19 19.04 4.58 19.42C4.97 19.81 5.61 19.81 5.99 19.42L7.05 18.36Z" fill="#d4af37"/>
+                            </svg>
+                            Iftar / Maghrib
+                        </div>
                         <div class="time" id="iftar-time">18:14</div>
                         <div class="subtitle">Break Fast</div>
                     </div>
@@ -337,67 +743,64 @@
                 
                 <div class="glass-card">
                     <h2>All Prayer Times</h2>
-                    <div class="table-responsive">
-                        <table class="weekly-table">
-                            <tr>
-                                <th>Prayer</th>
-                                <th>Azan</th>
-                                <th>Iqama</th>
-                            </tr>
-                            <tr>
-                                <td>Fajr</td>
-                                <td id="fajr-azan">04:55</td>
-                                <td id="fajr-iqama">+15 mins</td>
-                            </tr>
-                            <tr>
-                                <td>Sunrise</td>
-                                <td id="sunrise" colspan="2">06:32</td>
-                            </tr>
-                            <tr>
-                                <td>Dhuhr</td>
-                                <td id="dhuhr-azan">12:29</td>
-                                <td id="dhuhr-iqama">13:00</td>
-                            </tr>
-                            <tr>
-                                <td>Asr</td>
-                                <td id="asr-azan">15:29</td>
-                                <td id="asr-iqama">15:45</td>
-                            </tr>
-                            <tr>
-                                <td>Maghrib</td>
-                                <td id="maghrib-azan">18:14</td>
-                                <td id="maghrib-iqama">At Azan</td>
-                            </tr>
-                            <tr>
-                                <td>Isha</td>
-                                <td id="isha-azan">19:36</td>
-                                <td id="isha-iqama">19:45</td>
-                            </tr>
-                        </table>
-                    </div>
+                    <table class="weekly-table">
+                        <tr>
+                            <th>Prayer</th>
+                            <th>Azan</th>
+                            <th>Iqama</th>
+                        </tr>
+                        <tr>
+                            <td>Fajr</td>
+                            <td id="fajr-azan">04:55</td>
+                            <td id="fajr-iqama">+15 mins</td>
+                        </tr>
+                        <tr>
+                            <td>Sunrise</td>
+                            <td id="sunrise" colspan="2">06:32</td>
+                        </tr>
+                        <tr>
+                            <td>Dhuhr</td>
+                            <td id="dhuhr-azan">12:29</td>
+                            <td id="dhuhr-iqama">13:00</td>
+                        </tr>
+                        <tr>
+                            <td>Asr</td>
+                            <td id="asr-azan">15:29</td>
+                            <td id="asr-iqama">15:45</td>
+                        </tr>
+                        <tr>
+                            <td>Maghrib</td>
+                            <td id="maghrib-azan">18:14</td>
+                            <td id="maghrib-iqama">At Azan</td>
+                        </tr>
+                        <tr>
+                            <td>Isha</td>
+                            <td id="isha-azan">19:36</td>
+                            <td id="isha-iqama">19:45</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
             
             <div id="weekly-view" class="weekly-view">
                 <div class="glass-card">
                     <h2>Weekly Prayer Times</h2>
-                    <div class="table-responsive">
-                        <table class="weekly-table" id="weekly-table">
-                            <tr>
-                                <th>Day</th>
-                                <th>Date</th>
-                                <th>Ramadan</th>
-                                <th>Sehri</th>
-                                <th>Iftar</th>
-                            </tr>
-                            <!-- Rows will be populated by JavaScript -->
-                        </table>
-                    </div>
+                    <table class="weekly-table" id="weekly-table">
+                        <tr>
+                            <th>Day</th>
+                            <th>Date</th>
+                            <th>Ramadan</th>
+                            <th>Sehri</th>
+                            <th>Iftar</th>
+                        </tr>
+                        <!-- Rows will be populated by JavaScript -->
+                    </table>
                 </div>
             </div>
         </div>
         
         <footer>
+            <p>Ramadan Mubarak! • رمضان مبارك</p>
             <p>Based on Dar Ul-Isra Centre Prayer Timetable 2025/1446 AH</p>
         </footer>
     </div>
@@ -513,54 +916,40 @@
             return `${year}-${month}-${day}`;
         }
         
-        // Add this helper function to convert 24-hour format to 12-hour format with AM/PM
-        function convertTo12HourFormat(time24) {
-            // Check if the time is in valid format
-            if (!time24 || !time24.includes(':')) {
-                return time24; // Return as is if not in expected format
-            }
-            
-            const [hours, minutes] = time24.split(':').map(num => parseInt(num, 10));
-            
-            if (isNaN(hours) || isNaN(minutes)) {
-                return time24; // Return as is if parsing failed
-            }
-            
-            const period = hours >= 12 ? 'PM' : 'AM';
-            const hours12 = hours % 12 || 12; // Convert 0 to 12 for 12 AM
-            
-            return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
-        }
-        
         function updateDailyView(date) {
             // Display date
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             currentDateDisplay.textContent = date.toLocaleDateString('en-US', options);
             
+            // Find the corresponding prayer times
+            // For simplicity, we're using March 2025 data from the image
+            // In a real app, you would have a more comprehensive date mapping
+            
             // Calculate the day of the month (1-31)
             const day = date.getDate();
             
             // Find the prayer times for this day in March
+            // This is simplified - in a real app, you would handle different months
             const dayData = prayerTimesData.find(item => parseInt(item.date) === day);
             
             if (dayData) {
-                // We found matching data - convert to 12-hour format
-                sehriTimeDisplay.textContent = convertTo12HourFormat(dayData.sehri);
-                iftarTimeDisplay.textContent = convertTo12HourFormat(dayData.iftar);
+                // We found matching data
+                sehriTimeDisplay.textContent = dayData.sehri;
+                iftarTimeDisplay.textContent = dayData.iftar;
                 hijriDateDisplay.textContent = `${dayData.ramadan} Ramadan, 1446 AH`;
                 
-                // Update all prayer times with 12-hour format
-                fajrAzan.textContent = convertTo12HourFormat(dayData.sehri);
+                // Update all prayer times
+                fajrAzan.textContent = dayData.sehri;
                 fajrIqama.textContent = "+15 mins";
-                sunrise.textContent = convertTo12HourFormat(dayData.sunrise);
-                dhuhrAzan.textContent = convertTo12HourFormat(dayData.dhuhr);
-                dhuhrIqama.textContent = convertTo12HourFormat("13:00");
-                asrAzan.textContent = convertTo12HourFormat(dayData.asr);
-                asrIqama.textContent = convertTo12HourFormat("15:45");
-                maghribAzan.textContent = convertTo12HourFormat(dayData.iftar);
+                sunrise.textContent = dayData.sunrise;
+                dhuhrAzan.textContent = dayData.dhuhr;
+                dhuhrIqama.textContent = "13:00";
+                asrAzan.textContent = dayData.asr;
+                asrIqama.textContent = "15:45";
+                maghribAzan.textContent = dayData.iftar;
                 maghribIqama.textContent = "At Azan";
-                ishaAzan.textContent = convertTo12HourFormat(dayData.isha);
-                ishaIqama.textContent = convertTo12HourFormat("19:45");
+                ishaAzan.textContent = dayData.isha;
+                ishaIqama.textContent = "19:45";
             } else {
                 // No matching data found, display placeholders or error message
                 sehriTimeDisplay.textContent = "--:--";
@@ -611,12 +1000,73 @@
                 ramadanCell.textContent = `${dayData.ramadan} Ramadan`;
                 
                 const sehriCell = row.insertCell();
-                sehriCell.textContent = convertTo12HourFormat(dayData.sehri);
+                sehriCell.textContent = dayData.sehri;
                 
                 const iftarCell = row.insertCell();
-                iftarCell.textContent = convertTo12HourFormat(dayData.iftar);
+                iftarCell.textContent = dayData.iftar;
             });
         }
+
+        // Add touch event handling for better mobile experience
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial view based on screen size
+            if (window.innerWidth <= 768) {
+                // On mobile, make sure buttons have proper touch area
+                const allButtons = document.querySelectorAll('button');
+                allButtons.forEach(button => {
+                    button.style.minHeight = '44px'; // Minimum touch target size
+                });
+                
+                // Make date picker easier to tap
+                datePicker.style.minHeight = '44px';
+                
+                // Optimize layout for mobile to ensure main cards are visible
+                const mainTimes = document.querySelector('.main-times');
+                if (mainTimes) {
+                    // Ensure the main prayer time cards are visible without scrolling
+                    const viewportHeight = window.innerHeight;
+                    const headerHeight = document.querySelector('header').offsetHeight;
+                    const dateControlsHeight = document.querySelector('.date-selector').offsetHeight + 
+                                              document.querySelector('.view-toggle').offsetHeight +
+                                              document.querySelector('.date-display').offsetHeight +
+                                              document.querySelector('.hijri-date').offsetHeight;
+                    
+                    // Calculate available height for the main cards
+                    const availableHeight = viewportHeight - headerHeight - dateControlsHeight - 40; // 40px for margins/padding
+                    
+                    // Set maximum height for time cards to ensure they fit
+                    const timeCards = document.querySelectorAll('.time-card');
+                    const maxCardHeight = Math.floor(availableHeight / 2) - 20; // 20px for margins
+                    
+                    if (maxCardHeight > 0 && maxCardHeight < 150) { // Only apply if needed and reasonable
+                        timeCards.forEach(card => {
+                            card.style.maxHeight = maxCardHeight + 'px';
+                            card.style.display = 'flex';
+                            card.style.flexDirection = 'column';
+                            card.style.justifyContent = 'center';
+                        });
+                    }
+                }
+            }
+            
+            // Fix for iOS Safari date picker
+            if (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) {
+                datePicker.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    // This helps ensure the date picker opens properly on iOS
+                    this.focus();
+                });
+            }
+            
+            // Ensure weekly table is scrollable on mobile
+            const weeklyViewContainer = document.querySelector('.weekly-view');
+            if (weeklyViewContainer) {
+                weeklyViewContainer.addEventListener('touchstart', function(e) {
+                    // This prevents the touch event from being blocked
+                    e.stopPropagation();
+                });
+            }
+        });
     </script>
 </body>
 </html>
